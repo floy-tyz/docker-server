@@ -1,0 +1,42 @@
+version: '3.0'
+
+services:
+
+    proxy:
+        image: jwilder/nginx-proxy
+        ports:
+            - "81:80" # change port if host nginx is running @floy
+        volumes:
+            - /var/run/docker.sock:/tmp/docker.sock:ro
+        networks:
+            - proxy
+
+    mysql:
+        image: mysql:latest
+        command: --default-authentication-plugin=mysql_native_password
+        restart: unless-stopped
+        volumes:
+            - ./database/data:/var/lib/mysql
+        environment:
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        networks:
+            - backend
+
+    adminer:
+        image: adminer:latest
+        environment:
+            VIRTUAL_HOST: ${ADMINER_HOST}
+            ADMINER_DEFAULT_SERVER: mysql
+        networks:
+            - frontend
+            - backend
+
+networks:
+    proxy:
+        driver: bridge
+    frontend:
+        external:
+            name: docker-engine_proxy
+    backend:
