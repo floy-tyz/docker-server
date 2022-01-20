@@ -1,9 +1,10 @@
-version: '3.0'
+version: '3.7'
 
 services:
 
     proxy:
         image: jwilder/nginx-proxy
+        container_name: nginx-proxy
         ports:
             - "81:80" # change port if host nginx is running @floy
         volumes:
@@ -14,6 +15,7 @@ services:
     mysql:
         image: mysql:latest
         command: --default-authentication-plugin=mysql_native_password
+        container_name: mysql
         restart: unless-stopped
         volumes:
             - ./database/data:/var/lib/mysql
@@ -22,21 +24,25 @@ services:
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
             MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
         networks:
-            - backend
+            - sql
 
     adminer:
         image: adminer:latest
+        container_name: adminer
         environment:
             VIRTUAL_HOST: ${ADMINER_HOST}
             ADMINER_DEFAULT_SERVER: mysql
         networks:
             - frontend
-            - backend
+            - sql
 
 networks:
     proxy:
         driver: bridge
+        name: docker_engine_proxy
     frontend:
         external:
-            name: docker-engine_proxy
-    backend:
+            name: docker_engine_proxy
+    sql:
+        driver: bridge
+        name: docker_engine_sql
