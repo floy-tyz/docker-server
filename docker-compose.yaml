@@ -10,6 +10,17 @@ services:
             - "443:443" # change port if host nginx is running @floy
         volumes:
             - /var/run/docker.sock:/tmp/docker.sock:ro
+            - /etc/nginx/certs
+        networks:
+            - proxy
+
+    proxy-companion-ssl:
+        container_name: nginx-proxy-companion-ssl
+        image: jrcs/letsencrypt-nginx-proxy-companion
+        restart: always
+        volumes:
+            - /var/run/docker.sock:/tmp/docker.sock:ro
+            - /etc/nginx/certs
         networks:
             - proxy
 
