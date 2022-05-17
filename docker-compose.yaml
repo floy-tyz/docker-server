@@ -10,19 +10,21 @@ services:
             - "443:443" # change port if host nginx is running @floy
         volumes:
             - /var/run/docker.sock:/tmp/docker.sock:ro
-            - /etc/nginx/certs
+            - letsencrypt-certs:/etc/nginx/certs
+            - letsencrypt-vhost-d:/etc/nginx/vhost.d
         networks:
             - proxy
 
-    proxy-companion-ssl:
-        container_name: nginx-proxy-companion-ssl
+    letsencrypt-proxy:
         image: jrcs/letsencrypt-nginx-proxy-companion
-        restart: always
+        container_name: letsencrypt-proxy
         volumes:
-            - /var/run/docker.sock:/tmp/docker.sock:ro
-            - /etc/nginx/certs
-        networks:
-            - proxy
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+            - letsencrypt-certs:/etc/nginx/certs
+            - letsencrypt-vhost-d:/etc/nginx/vhost.d
+        environment:
+            - DEFAULT_EMAIL=steve@{your_email_domain}.com
+            - NGINX_PROXY_CONTAINER=nginx-proxy
 
     mysql:
         image: mysql:latest
@@ -47,6 +49,10 @@ services:
         networks:
             - frontend
             - sql
+
+volumes:
+    letsencrypt-certs:
+    letsencrypt-vhost-d:
 
 networks:
 
