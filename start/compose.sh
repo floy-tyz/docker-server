@@ -6,4 +6,4 @@ ERROR='\033[0;31m'
 NC='\033[0m'
 
 cd $1
-sudo docker-compose -p $2 up --build >> /dev/null
+docker-compose -p $2 up --build >> /dev/null

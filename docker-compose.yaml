@@ -7,6 +7,7 @@ services:
         container_name: nginx-proxy
         ports:
             - "81:80" # change port if host nginx is running @floy
+            - "443:443" # change port if host nginx is running @floy
         volumes:
             - /var/run/docker.sock:/tmp/docker.sock:ro
         networks:
@@ -37,12 +38,15 @@ services:
             - sql
 
 networks:
+
     proxy:
         driver: bridge
         name: docker_engine_proxy
+
     frontend:
         external:
             name: docker_engine_proxy
+
     sql:
         driver: bridge
         name: docker_engine_sql

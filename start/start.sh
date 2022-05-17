@@ -70,29 +70,29 @@ fi
 if [ $RESTART_ENGINE -eq 1 ]; then
     for name in nginx-proxy mysql adminer
     do
-        if [ "$(sudo docker ps -a -q -f name=$name)" ]; then
-            if [ "$( sudo docker container inspect -f '{{.State.Running}}' $name )" == "true" ]; then
+        if [ "$(docker ps -a -q -f name=$name)" ]; then
+            if [ "$( docker container inspect -f '{{.State.Running}}' $name )" == "true" ]; then
                 printf "${WARNING}Container $name is already running${NC}\n"
-                sudo docker stop $name
+                docker stop $name
             fi
-            if [ "$(sudo docker ps -aq -f status=exited -f name=$name)" ]; then
+            if [ "$(docker ps -aq -f status=exited -f name=$name)" ]; then
                 printf "${WARNING}$name restarting...${NC}\n"
-                sudo docker rm $name
+                docker rm $name
             fi
         fi
     done
 fi
 
 if [ $RESTART_PROJECT -eq 1 ]; then
-    CONTAINERS=$(sudo docker ps -a -q -f name=course)
+    CONTAINERS=$(docker ps -a -q -f name=course)
     for CONTAINER in $CONTAINERS
     do
-        if [ "$( sudo docker container inspect -f '{{.State.Running}}' $CONTAINER )" == "true" ]; then
+        if [ "$( docker container inspect -f '{{.State.Running}}' $CONTAINER )" == "true" ]; then
             printf "${WARNING}Container $CONTAINER is already running${NC}\n"
-            sudo docker stop $CONTAINER
+            docker stop $CONTAINER
         fi
-        if [ "$(sudo docker ps -aq -f status=exited -f id=$CONTAINER)" ]; then
-            sudo docker rm $CONTAINER
+        if [ "$(docker ps -aq -f status=exited -f id=$CONTAINER)" ]; then
+            docker rm $CONTAINER
             printf "${WARNING}$CONTAINER restarting...${NC}\n"
         fi
     done
@@ -104,10 +104,10 @@ printf "${SUCCESS}Engine - $DOCKER_ENGINE_DIR${NC}\n"
 if [ $RESTART_ENGINE -eq 1 ]; then
     bash $DOCKER_ENGINE_DIR/start/compose.sh $DOCKER_PROJECT_DIR $NAME &
     bash $DOCKER_ENGINE_DIR/start/compose.sh $DOCKER_ENGINE_DIR $NAME &
-    sudo docker stats
+    docker stats
 fi
 
 if [ $RESTART_ENGINE -eq 0 ]; then
     bash $DOCKER_ENGINE_DIR/start/compose.sh $DOCKER_PROJECT_DIR $NAME &
-    sudo docker stats
+    docker stats
 fi
