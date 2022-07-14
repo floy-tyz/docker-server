@@ -1,0 +1,23 @@
+version: '3.9'
+
+services:
+
+    nginx-proxy:
+        ports:
+            - "80:80"
+            - "443:443"
+
+    nginx-acme-companion:
+        image: nginxproxy/acme-companion
+        container_name: nginx-acme-companion
+        restart: unless-stopped
+        volumes:
+            - ${DOCKER_SOCK_ROOTLESS_PATH:-/var/run/docker.sock}:/var/run/docker.sock:ro
+
+            - ${NGINX_FILES_PATH:-./nginx}/vhost.d:/etc/nginx/vhost.d
+            - ${NGINX_FILES_PATH:-./nginx}/html:/usr/share/nginx/html
+            - ${NGINX_FILES_PATH:-./nginx}/certs:/etc/nginx/certs:rw
+            - ${NGINX_FILES_PATH:-./nginx}/acme.sh:/etc/acme.sh
+        environment:
+            NGINX_PROXY_CONTAINER: ${NGINX_PROXY_SERVICE_NAME:-nginx-proxy}
+            DEFAULT_EMAIL: ${DEFAULT_EMAIL:-mail@domain.tld}

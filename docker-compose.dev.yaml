@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+
+    nginx-proxy:
+        ports:
+            - "81:80"
+
+    adminer:
+        image: adminer:latest
+        container_name: adminer
+        environment:
+            VIRTUAL_HOST: ${ADMINER_HOST:-adminer.local}
+            ADMINER_DEFAULT_SERVER: mysql
+        networks:
+            - proxy
+            - sql

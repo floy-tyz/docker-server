@@ -1,39 +1,20 @@
-version: '3.7'
+version: '3.9'
 
 services:
 
     nginx-proxy:
-        image: jwilder/nginx-proxy
+        image: nginxproxy/nginx-proxy:alpine
         container_name: nginx-proxy
         restart: unless-stopped
-        ports:
-            - "81:80" # change port if host nginx is running @floy
-            - "443:443" # change port if host nginx is running @floy
         volumes:
-            - ${DOCKER_HOST_ROOTLESS_PATH:-/var/run/docker.sock}:/tmp/docker.sock:ro
+            - ${DOCKER_SOCK_ROOTLESS_PATH:-/var/run/docker.sock}:/tmp/docker.sock:ro
             - ${NGINX_FILES_PATH:-./nginx}/conf.d:/etc/nginx/conf.d
             - ${NGINX_FILES_PATH:-./nginx}/vhost.d:/etc/nginx/vhost.d
             - ${NGINX_FILES_PATH:-./nginx}/html:/usr/share/nginx/html
             - ${NGINX_FILES_PATH:-./nginx}/certs:/etc/nginx/certs:ro
-            - ${NGINX_FILES_PATH:-./nginx}/htpasswd:/etc/nginx/htpasswd:ro
             - ${NGINX_FILES_PATH:-./nginx}/nginx.conf:/etc/nginx/nginx.conf
         networks:
             - proxy
-
-#    nginx-letsencrypt-proxy:
-#        image: nginxproxy/acme-companion
-#        container_name: nginx-letsencrypt-proxy
-#        restart: unless-stopped
-#        volumes:
-#            - ${DOCKER_HOST_ROOTLESS_PATH:-/var/run/docker.sock}:/var/run/docker.sock:ro
-#            - ${NGINX_FILES_PATH:-./nginx}/conf.d:/etc/nginx/conf.d
-#            - ${NGINX_FILES_PATH:-./nginx}/vhost.d:/etc/nginx/vhost.d
-#            - ${NGINX_FILES_PATH:-./nginx}/html:/usr/share/nginx/html
-#            - ${NGINX_FILES_PATH:-./nginx}/certs:/etc/nginx/certs:rw
-#            - ${NGINX_FILES_PATH:-./nginx}/acme.sh:/etc/acme.sh
-#        environment:
-#            NGINX_PROXY_CONTAINER: ${NGINX_PROXY_SERVICE_NAME:-nginx-proxy}
-#            DEFAULT_EMAIL: ${DEFAULT_EMAIL:-mail@domain.tld}
 
     mysql:
         image: mysql:latest
@@ -49,25 +30,11 @@ services:
         networks:
             - sql
 
-    adminer:
-        image: adminer:latest
-        container_name: adminer
-        environment:
-            VIRTUAL_HOST: ${ADMINER_HOST:-adminer.local}
-            ADMINER_DEFAULT_SERVER: mysql
-        networks:
-            - frontend
-            - sql
-
 networks:
 
     proxy:
         driver: bridge
         name: docker_engine_proxy
-
-    frontend:
-        external:
-            name: docker_engine_proxy
 
     sql:
         driver: bridge
