@@ -23,6 +23,7 @@ services:
         restart: unless-stopped
         volumes:
             - ./database/data:/var/lib/mysql
+            - /etc/localtime:/etc/localtime:ro
         environment:
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
