@@ -21,3 +21,13 @@ services:
         environment:
             NGINX_PROXY_CONTAINER: ${NGINX_PROXY_SERVICE_NAME:-nginx-proxy}
             DEFAULT_EMAIL: ${DEFAULT_EMAIL:-mail@domain.tld}
+
+    adminer:
+        image: adminer:latest
+        container_name: adminer
+        environment:
+            VIRTUAL_HOST: adminer.php
+            ADMINER_DEFAULT_SERVER: mysql
+        networks:
+            - proxy
+            - sql
