@@ -23,4 +23,5 @@ services:
 
     adminer:
         environment:
-            VIRTUAL_HOST: ${ADMINER_HOST:-_}
+            VIRTUAL_HOST: ${SERVER_IP}
+            VIRTUAL_PATH: /adminer
