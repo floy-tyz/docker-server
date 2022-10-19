@@ -22,13 +22,23 @@ services:
         container_name: mysql
         restart: unless-stopped
         volumes:
-            - ./database/data:/var/lib/mysql
+            - ./database/data/:/var/lib/mysql
             - /etc/localtime:/etc/localtime:ro
         environment:
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
             MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
         networks:
+            - sql
+
+    adminer:
+        image: adminer:latest
+        container_name: adminer
+        restart: unless-stopped
+        environment:
+            ADMINER_DEFAULT_SERVER: mysql
+        networks:
+            - proxy
             - sql
 
 networks:

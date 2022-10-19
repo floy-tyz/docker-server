@@ -13,7 +13,6 @@ services:
         restart: unless-stopped
         volumes:
             - ${DOCKER_SOCK_ROOTLESS_PATH:-/var/run/docker.sock}:/var/run/docker.sock:ro
-
             - ${NGINX_FILES_PATH:-./nginx}/vhost.d:/etc/nginx/vhost.d
             - ${NGINX_FILES_PATH:-./nginx}/html:/usr/share/nginx/html
             - ${NGINX_FILES_PATH:-./nginx}/certs:/etc/nginx/certs:rw
@@ -23,11 +22,5 @@ services:
             DEFAULT_EMAIL: ${DEFAULT_EMAIL:-mail@domain.tld}
 
     adminer:
-        image: adminer:latest
-        container_name: adminer
         environment:
-            VIRTUAL_HOST: adminer.php
-            ADMINER_DEFAULT_SERVER: mysql
-        networks:
-            - proxy
-            - sql
+            VIRTUAL_HOST: ${ADMINER_HOST:-_}
